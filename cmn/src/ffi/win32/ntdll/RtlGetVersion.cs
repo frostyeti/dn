@@ -8,13 +8,13 @@ internal static partial class Interop
 {
     internal static partial class NtDll
     {
-    #if NET7_0_OR_GREATER
+#if NET7_0_OR_GREATER
         [LibraryImport(Libs.NtDll)]
         private static partial int RtlGetVersion(ref OSVERSIONINFOEX lpVersionInformation);
-    #else
+#else
         [DllImport(Libs.NtDll)]
         private static extern int RtlGetVersion(ref OSVERSIONINFOEX lpVersionInformation);
-    #endif
+#endif
 
         internal static unsafe int RtlGetVersionEx(out OSVERSIONINFOEX osvi)
         {
