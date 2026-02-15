@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FrostYeti.Crypto.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/FrostYeti.Crypto.Tests.csproj" />
+  </Folder>
+</Solution>
