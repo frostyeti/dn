@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -9,7 +9,7 @@ namespace FrostYeti.Crypto.X509;
 
 public interface ICertificateRequestBuilder
 {
-    ICertificateRequestBuilder AsCertificateAuthority(bool isCertificateAuthority = true);
+    ICertificateRequestBuilder AsCertificateAuthority(bool isCertificateAuthority = true, bool critical = true);
 
     CertificateRequest Build();
 
@@ -33,7 +33,9 @@ public interface ICertificateRequestBuilder
 
     ICertificateRequestBuilder WithEnhancedKeyUsages(params EnhancedKeyUsageOids[] enhancedKeyUsages);
 
-    ICertificateRequestBuilder WithKeyUsage(X509KeyUsageFlags flags);
+    ICertificateRequestBuilder WithEnhancedKeyUsages(bool critical, params EnhancedKeyUsageOids[] enhancedKeyUsages);
+
+    ICertificateRequestBuilder WithKeyUsage(X509KeyUsageFlags flags, bool critical = false);
 
     ICertificateRequestBuilder WithSigningAlgorithm(HashAlgorithmName name);
 

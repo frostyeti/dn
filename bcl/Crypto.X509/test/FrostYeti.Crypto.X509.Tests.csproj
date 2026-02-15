@@ -20,10 +20,14 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
+<ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk"  />
     <PackageReference Include="xunit.v3"  />
     <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\FrostYeti.Crypto.X509.csproj" />
   </ItemGroup>
 
 </Project>

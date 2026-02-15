@@ -21,6 +21,12 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
 
     private bool isCa;
 
+    private bool isBasicConstraintsCritical;
+
+    private bool isEnhancedKeyUsageCritical;
+
+    private bool isKeyUsageCritical;
+
     private bool isPathConstraintCritical;
 
     private X509KeyUsageFlags keyUsage;
@@ -45,9 +51,10 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
 
     private string? subject;
 
-    public ICertificateRequestBuilder AsCertificateAuthority(bool isCertificateAuthority = true)
+    public ICertificateRequestBuilder AsCertificateAuthority(bool isCertificateAuthority = true, bool critical = true)
     {
         this.isCa = isCertificateAuthority;
+        this.isBasicConstraintsCritical = critical;
         return this;
     }
 
@@ -78,8 +85,8 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
                 this.isCa,
                 this.hasPathConstraint,
                 this.pathLengthConstraint,
-                this.isPathConstraintCritical));
-        req.CertificateExtensions.Add(new X509KeyUsageExtension(this.keyUsage, false));
+                this.isBasicConstraintsCritical || this.isPathConstraintCritical));
+        req.CertificateExtensions.Add(new X509KeyUsageExtension(this.keyUsage, this.isKeyUsageCritical));
 
         if (this.signer != null)
         {
@@ -132,7 +139,7 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
         }
 
         req.CertificateExtensions.Add(
-            new X509EnhancedKeyUsageExtension(oidCollection, false));
+            new X509EnhancedKeyUsageExtension(oidCollection, this.isEnhancedKeyUsageCritical));
 
         req.CertificateExtensions.Add(
             new X509SubjectKeyIdentifierExtension(req.PublicKey, false));
@@ -151,37 +158,50 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
             return this.request.CreateSelfSigned(nb, na);
         }
 
-        if (this.serialNumber is not null && this.serialNumber.Length != 0)
+        byte[] serial;
+        if (this.serialNumber is not null && this.serialNumber.Length > 0)
         {
-            return this.request.Create(
-                this.signer,
-                nb,
-                na,
-                this.serialNumber);
+            serial = this.serialNumber;
+        }
+        else
+        {
+#if NET8_0_OR_GREATER
+            var epoch = DateTime.UnixEpoch;
+#else
+            DateTime epoch = new(
+                1970,
+                1,
+                1,
+                0,
+                0,
+                0,
+                DateTimeKind.Utc);
+#endif
+            ulong unixTime = Convert.ToUInt64((DateTime.UtcNow - epoch).TotalSeconds);
+            Span<byte> serialByteSpan = new(new byte[sizeof(ulong)]);
+            BinaryPrimitives.WriteUInt64BigEndian(serialByteSpan, unixTime);
+            serial = serialByteSpan.ToArray();
         }
 
-#if NET8_0_OR_GREATER
-        var epoch = DateTime.UnixEpoch;
-#else
-        DateTime epoch = new(
-            1970,
-            1,
-            1,
-            0,
-            0,
-            0,
-            DateTimeKind.Utc);
-#endif
-        ulong unixTime = Convert.ToUInt64((DateTime.UtcNow - epoch).TotalSeconds);
-        Span<byte> serialByteSpan = new(new byte[sizeof(ulong)]);
-        BinaryPrimitives.WriteUInt64BigEndian(serialByteSpan, unixTime);
-        this.serialNumber = serialByteSpan.ToArray();
-
-        return this.request.Create(
+        var cert = this.request.Create(
             this.signer,
             nb,
             na,
-            this.serialNumber);
+            serial);
+
+        // CertificateRequest.Create does not include the private key,
+        // so we need to copy it to the generated certificate
+        if (this.rsa is not null)
+        {
+            return cert.CopyWithPrivateKey(this.rsa);
+        }
+
+        if (this.ecdsa is not null)
+        {
+            return cert.CopyWithPrivateKey(this.ecdsa);
+        }
+
+        return cert;
     }
 
     public ICertificateRequestBuilder Reset()
@@ -192,13 +212,15 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
         this.ecdsa = null;
         this.rsa = null;
         this.isCa = false;
+        this.isBasicConstraintsCritical = false;
+        this.isEnhancedKeyUsageCritical = false;
+        this.isKeyUsageCritical = false;
         this.isPathConstraintCritical = false;
         this.keyUsage = X509KeyUsageFlags.None;
         this.notAfter = null;
         this.notBefore = null;
         this.pathLengthConstraint = 0;
         this.request = null;
-        this.rsa = null;
         this.rsaSignaturePadding = RSASignaturePadding.Pkcs1;
         this.serialNumber = null;
         this.signingAlgo = HashAlgorithmName.SHA256;
@@ -318,6 +340,29 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
         return this;
     }
 
+/// <summary>
+    /// Sets the enhanced key usages for the certificate with critical flag.
+    /// </summary>
+    /// <param name="critical">Whether the extension is critical.</param>
+    /// <param name="enhancedKeyUsages">The enhanced key usages.</param>
+    /// <returns>This builder instance.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var cert = new CertificateRequestBuilder()
+    ///     .WithSubject("CN=Test Server")
+    ///     .WithEnhancedKeyUsages(critical: true, EnhancedKeyUsageOids.ServerAuthentication)
+    ///     .WithRsa(2048)
+    ///     .BuildCertificate();
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public ICertificateRequestBuilder WithEnhancedKeyUsages(bool critical, params EnhancedKeyUsageOids[] enhancedKeyUsages)
+    {
+        this.isEnhancedKeyUsageCritical = critical;
+        return this.WithEnhancedKeyUsages(enhancedKeyUsages);
+    }
+
     public ICertificateRequestBuilder WithEnhancedKeyUsages(params EnhancedKeyUsageOids[] enhancedKeyUsages)
     {
         foreach (EnhancedKeyUsageOids enumeration in enhancedKeyUsages)
@@ -358,9 +403,10 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
         return this;
     }
 
-    public ICertificateRequestBuilder WithKeyUsage(X509KeyUsageFlags flags)
+    public ICertificateRequestBuilder WithKeyUsage(X509KeyUsageFlags flags, bool critical = false)
     {
         this.keyUsage = flags;
+        this.isKeyUsageCritical = critical;
         return this;
     }
 

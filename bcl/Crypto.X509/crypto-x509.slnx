@@ -1,2 +1,4 @@
 <Solution>
+  <Project Path="src/FrostYeti.Crypto.X509.csproj" />
+  <Project Path="test/FrostYeti.Crypto.X509.Tests.csproj" />
 </Solution>
