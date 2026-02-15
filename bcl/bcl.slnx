@@ -27,11 +27,25 @@
   <Folder Name="/Crypto/test/">
     <Project Path="Crypto/test/FrostYeti.Crypto.Tests.csproj" />
   </Folder>
+  <Folder Name="/DotEnv/" />
+  <Folder Name="/DotEnv/src/">
+    <Project Path="DotEnv/src/FrostYeti.DotEnv.csproj" />
+  </Folder>
+  <Folder Name="/DotEnv/test/">
+    <Project Path="DotEnv/test/FrostYeti.DotEnv.Tests.csproj" />
+  </Folder>
   <Folder Name="/Exec/" />
   <Folder Name="/Exec/src/">
     <Project Path="Exec/src/FrostYeti.Exec.csproj" />
   </Folder>
   <Folder Name="/Exec/test/">
     <Project Path="Exec/test/FrostYeti.Exec.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Secrets.OperatingSystem/" />
+  <Folder Name="/Secrets.OperatingSystem/src/">
+    <Project Path="Secrets.OperatingSystem/src/FrostYeti.Secrets.OperatingSystem.csproj" />
+  </Folder>
+  <Folder Name="/Secrets.OperatingSystem/test/">
+    <Project Path="Secrets.OperatingSystem/test/FrostYeti.Secrets.OperatingSystem.Tests.csproj" />
   </Folder>
 </Solution>
