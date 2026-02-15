@@ -45,6 +45,13 @@ public sealed class NodeJsCommand : ShellCommand<NodeJsCommand, NodeJsCommandOpt
     ///   The default paths for windows look under Program Files for Git NodeJs. For Linux, it
     ///   checks common locations like `/usr/bin/bash` and `/usr/local/bin/bash`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// NodeJsCommand.RegisterPathHint();
+    /// using var cmd = new NodeJsCommand("console.log('hello')");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

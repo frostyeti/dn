@@ -39,6 +39,14 @@ public class PathHint
     /// Gets the name of the executable to locate.
     /// </summary>
     /// <value>The name of the executable.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var hint = new PathHint("dotnet");
+    /// Assert.Equal("dotnet", hint.Name);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public string Name { get; }
 
     /// <summary>
@@ -63,17 +71,44 @@ public class PathHint
     /// Gets or sets the paths to search in for Windows.
     /// </summary>
     /// <value>A set of Windows-specific paths to search.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var hint = new PathHint("test");
+    /// hint.Windows.Add("C:\\Tools\\test.exe");
+    /// Assert.Single(hint.Windows);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public HashSet<string> Windows { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the paths to search in for Linux.
     /// </summary>
     /// <value>A set of Linux-specific paths to search.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var hint = new PathHint("test");
+    /// hint.Linux.Add("/usr/bin/test");
+    /// Assert.Single(hint.Linux);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public HashSet<string> Linux { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the paths to search in for macOS (Darwin).
     /// </summary>
     /// <value>A set of macOS-specific paths to search.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var hint = new PathHint("test");
+    /// hint.Darwin.Add("/usr/local/bin/test");
+    /// Assert.Single(hint.Darwin);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public HashSet<string> Darwin { get; set; } = new();
 }

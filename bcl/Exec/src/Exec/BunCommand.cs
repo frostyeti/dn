@@ -45,6 +45,13 @@ public sealed class BunCommand : ShellCommand<BunCommand, BunCommandOptions>
     ///   The default paths for windows look under Program Files for Git Bun. For Linux, it
     ///   checks common locations like `/usr/bin/bun` and `/usr/local/bin/bun`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// BunCommand.RegisterPathHint();
+    /// using var cmd = new BunCommand("console.log('hello')");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

@@ -60,6 +60,13 @@ public sealed class RubyCommand : ShellCommand<RubyCommand, RubyCommandOptions>
     ///   The default paths for windows look under Program Files for Git Ruby. For Linux, it
     ///   checks common locations like `/usr/bin/python3` and `/usr/local/bin/python3`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// RubyCommand.RegisterPathHint();
+    /// using var cmd = new RubyCommand("puts 'hello'");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

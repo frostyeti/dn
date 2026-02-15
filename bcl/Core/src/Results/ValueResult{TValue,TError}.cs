@@ -61,6 +61,14 @@ public readonly struct ValueResult<TValue, TError> : IValueResult<TValue, TError
     /// <summary>
     /// Gets a value indicating whether the result is successful.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var result = ValueResult&lt;string, int&gt;.Ok("success");
+    /// Assert.True(result.IsOk);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool IsOk { get; }
 
     /// <summary>

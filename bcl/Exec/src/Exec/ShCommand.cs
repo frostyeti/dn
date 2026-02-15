@@ -59,6 +59,13 @@ public sealed class ShCommand : ShellCommand<ShCommand, ShCommandOptions>
     ///   The default paths for Windows look under Program Files for Git installations.
     ///   For Linux, it checks common locations like `/usr/bin/sh` and `/usr/local/bin/sh`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// ShCommand.RegisterPathHint();
+    /// using var cmd = new ShCommand("echo hello");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

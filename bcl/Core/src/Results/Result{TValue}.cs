@@ -81,6 +81,14 @@ public class Result<TValue> : IValueResult<TValue, Exception>,
     /// <summary>
     /// Gets a value indicating whether the result is successful.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var result = Result&lt;string&gt;.Ok("success");
+    /// Assert.True(result.IsOk);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool IsOk { get; }
 
     /// <summary>

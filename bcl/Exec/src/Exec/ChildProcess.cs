@@ -284,6 +284,14 @@ public sealed class ChildProcess : IDisposable
     /// Gets a value indicating whether standard output has been piped.
     /// </summary>
     /// <value><c>true</c> if standard output has been piped; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardOutput = true });
+    /// Assert.False(child.IsStdoutPiped);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool IsStdoutPiped { get; private set; }
 
     /// <summary>
@@ -296,6 +304,14 @@ public sealed class ChildProcess : IDisposable
     /// Gets a value indicating whether standard error has been piped.
     /// </summary>
     /// <value><c>true</c> if standard error has been piped; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardError = true });
+    /// Assert.False(child.IsStderrPiped);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool IsStderrPiped { get; private set; }
 
     /// <summary>
@@ -551,6 +567,15 @@ public sealed class ChildProcess : IDisposable
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>A task representing the async operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when stdout is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardOutput = true });
+    /// using var writer = new StringWriter();
+    /// await child.PipeToAsync(writer);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Task PipeToAsync(TextWriter writer, int bufferSize = -1, CancellationToken cancellationToken = default)
     {
         this.GuardPiped();
@@ -564,6 +589,15 @@ public sealed class ChildProcess : IDisposable
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>A task representing the async operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when stdout is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardOutput = true });
+    /// var lines = new List&lt;string&gt;();
+    /// await child.PipeToAsync(lines);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Task PipeToAsync(ICollection<string> lines, CancellationToken cancellationToken = default)
     {
         this.GuardPiped();
@@ -579,6 +613,15 @@ public sealed class ChildProcess : IDisposable
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>A task representing the async operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when stdout is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardOutput = true });
+    /// var file = new FileInfo("output.txt");
+    /// await child.PipeToAsync(file, Encoding.UTF8);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Task PipeToAsync(FileInfo file, Encoding? encoding, int bufferSize = -1, CancellationToken cancellationToken = default)
     {
         this.GuardPiped();
@@ -647,6 +690,15 @@ public sealed class ChildProcess : IDisposable
     /// </summary>
     /// <param name="writer">The text writer to write to.</param>
     /// <exception cref="InvalidOperationException">Thrown when stderr is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardError = true });
+    /// using var writer = new StringWriter();
+    /// child.PipeErrorTo(writer);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public void PipeErrorTo(TextWriter writer)
     {
         this.GuardErrorPiped();
@@ -658,6 +710,15 @@ public sealed class ChildProcess : IDisposable
     /// </summary>
     /// <param name="lines">The collection to add lines to.</param>
     /// <exception cref="InvalidOperationException">Thrown when stderr is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardError = true });
+    /// var lines = new List&lt;string&gt;();
+    /// child.PipeErrorTo(lines);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public void PipeErrorTo(ICollection<string> lines)
     {
         this.GuardErrorPiped();
@@ -669,6 +730,15 @@ public sealed class ChildProcess : IDisposable
     /// </summary>
     /// <param name="file">The file to write to.</param>
     /// <exception cref="InvalidOperationException">Thrown when stderr is not redirected or already piped.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var child = new ChildProcess(new ProcessStartInfo("dotnet") { RedirectStandardError = true });
+    /// var file = new FileInfo("errors.txt");
+    /// child.PipeErrorTo(file);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public void PipeErrorTo(FileInfo file)
     {
         this.GuardErrorPiped();

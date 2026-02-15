@@ -45,6 +45,13 @@ public sealed class DenoCommand : ShellCommand<DenoCommand, DenoCommandOptions>
     ///   The default paths for windows look under Program Files for Git Deno. For Linux, it
     ///   checks common locations like `/usr/bin/deno` and `/usr/local/bin/deno`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// DenoCommand.RegisterPathHint();
+    /// using var cmd = new DenoCommand("console.log('hello')");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

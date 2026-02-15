@@ -10,13 +10,22 @@ public static class ProcessMembers
     {
 #pragma warning disable S2325, SA1101
 #if NETLEGACY
-        /// <summary>
+/// <summary>
         /// Waits asynchronously for the process to exit.
         /// </summary>
         /// <param name="cancellationToken">
         /// A cancellation token. If invoked, the task will return
         /// immediately as canceled.</param>
         /// <returns>A Task representing waiting for the process to end.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var process = Process.Start("dotnet", "--version");
+        /// await process.WaitForExitAsync();
+        /// Assert.True(process.HasExited);
+        /// </code>
+        /// </example>
+        /// </remarks>
         public Task WaitForExitAsync(CancellationToken cancellationToken = default)
         {
             if (process.HasExited)

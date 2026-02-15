@@ -63,6 +63,14 @@ public partial class CommandArgs : List<string>
     /// <summary>
     /// Gets or sets a value indicating whether generated argument strings are escaped.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var args = new CommandArgs { Escape = false };
+    /// args.Add("--flag", "value");
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool Escape { get; set; } = true;
 
     /// <summary>

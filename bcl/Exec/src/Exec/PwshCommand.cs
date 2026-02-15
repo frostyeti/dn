@@ -66,6 +66,13 @@ public sealed class PwshCommand : ShellCommand<PwshCommand, PwshCommandOptions>
     ///   The default paths for windows look under Program Files for PowerShell versions 6 and 7, including
     ///   preview versions. For Linux, it checks common locations like `/usr/bin/pwsh` and `/usr/local/bin/pwsh`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// PwshCommand.RegisterPathHint();
+    /// using var cmd = new PwshCommand("Write-Host 'hello'");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

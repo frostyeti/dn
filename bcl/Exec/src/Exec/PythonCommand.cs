@@ -32,6 +32,13 @@ public sealed class PythonCommand : ShellCommand<PythonCommand, PythonCommandOpt
     ///   The default paths for windows look under Program Files for Git Python. For Linux, it
     ///   checks common locations like `/usr/bin/python3` and `/usr/local/bin/python3`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// PythonCommand.RegisterPathHint();
+    /// using var cmd = new PythonCommand("print('hello')");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {

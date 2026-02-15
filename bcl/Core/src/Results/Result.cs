@@ -431,6 +431,14 @@ public class Result : IEmptyResult<Exception>
     /// <summary>
     /// Gets a value indicating whether the result represents success.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var result = Result.Ok();
+    /// Assert.True(result.IsOk);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool IsOk { get; }
 
     /// <summary>

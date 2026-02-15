@@ -124,12 +124,28 @@ public readonly struct Output
     /// Gets the exit code of the process.
     /// </summary>
     /// <value>The exit code returned by the process.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var output = new Output(0, "test", [], [], null, null);
+    /// Assert.Equal(0, output.ExitCode);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public int ExitCode { get; }
 
     /// <summary>
     /// Gets the file name or path of the executable that was run.
     /// </summary>
     /// <value>The name or path of the executable.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var output = new Output(0, "dotnet", [], [], null, null);
+    /// Assert.Equal("dotnet", output.FileName);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public string FileName { get; }
 
     /// <summary>
@@ -148,12 +164,30 @@ public readonly struct Output
     /// Gets the time the process started.
     /// </summary>
     /// <value>The start time of the process.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var startTime = DateTime.Now;
+    /// var output = new Output(0, "test", [], [], startTime, null);
+    /// Assert.Equal(startTime, output.StartTime);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public DateTime StartTime { get; }
 
     /// <summary>
     /// Gets the time the process exited.
     /// </summary>
     /// <value>The exit time of the process.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var exitTime = DateTime.Now;
+    /// var output = new Output(0, "test", [], [], null, exitTime);
+    /// Assert.Equal(exitTime, output.ExitTime);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public DateTime ExitTime { get; }
 
     /// <summary>

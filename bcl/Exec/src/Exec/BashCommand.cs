@@ -36,6 +36,13 @@ public sealed class BashCommand : ShellCommand<BashCommand, BashCommandOptions>
     ///   The default paths for windows look under Program Files for Git Bash. For Linux, it
     ///   checks common locations like `/usr/bin/bash` and `/usr/local/bin/bash`.
     /// </para>
+    /// <example>
+    /// <code lang="csharp">
+    /// BashCommand.RegisterPathHint();
+    /// using var cmd = new BashCommand("echo hello");
+    /// var output = cmd.Output();
+    /// </code>
+    /// </example>
     /// </remarks>
     public static void RegisterPathHint()
     {
@@ -57,6 +64,13 @@ public sealed class BashCommand : ShellCommand<BashCommand, BashCommandOptions>
     /// <summary>
     /// Prepends the Git Bash path to the system PATH environment variable on Windows.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// BashCommand.PrependWindowsGitPath();
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void PrependWindowsGitPath()
     {
         if (s_prepended)

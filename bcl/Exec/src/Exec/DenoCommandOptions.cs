@@ -23,6 +23,15 @@ public sealed class DenoCommandOptions : ShellCommandOptions
     /// <exception cref="InvalidOperationException">
     /// Thrown when the script is not set.
     /// </exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new DenoCommandOptions { Script = "console.log('test')" };
+    /// var args = options.ToStartInfo().Arguments;
+    /// Assert.Contains("eval", args);
+    /// </code>
+    /// </example>
+    /// </remarks>
     protected override CommandArgs FinalizeArgs()
     {
         if (this.Script.IsNullOrWhiteSpace())

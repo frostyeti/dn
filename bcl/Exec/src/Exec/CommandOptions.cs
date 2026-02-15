@@ -32,18 +32,44 @@ public class CommandOptions
     /// Gets or sets an action to modify the <see cref="ProcessStartInfo"/> before the process starts.
     /// </summary>
     /// <value>An action that can modify the process start information.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions
+    /// {
+    ///     WriteCommand = info => info.WindowStyle = ProcessWindowStyle.Hidden
+    /// };
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Action<ProcessStartInfo>? WriteCommand { get; set; }
 
     /// <summary>
     /// Gets or sets the executable file name or path.
     /// </summary>
     /// <value>The name or path of the executable to run.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { File = "dotnet" };
+    /// Assert.Equal("dotnet", options.File);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public string File { get; internal protected set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the arguments to pass to the executable.
     /// </summary>
     /// <value>A list of arguments for the executable.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { Args = ["--version"] };
+    /// Assert.Single(options.Args);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public CommandArgs Args { get; internal protected set; } = [];
 
     /// <summary>
@@ -68,18 +94,42 @@ public class CommandOptions
     /// Gets or sets how standard output should be handled.
     /// </summary>
     /// <value>The <see cref="Stdio"/> configuration for standard output.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { Stdout = Stdio.Piped };
+    /// Assert.Equal(Stdio.Piped, options.Stdout);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Stdio Stdout { get; set; }
 
     /// <summary>
     /// Gets or sets how standard error should be handled.
     /// </summary>
     /// <value>The <see cref="Stdio"/> configuration for standard error.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { Stderr = Stdio.Piped };
+    /// Assert.Equal(Stdio.Piped, options.Stderr);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Stdio Stderr { get; set; }
 
     /// <summary>
     /// Gets or sets how standard input should be handled.
     /// </summary>
     /// <value>The <see cref="Stdio"/> configuration for standard input.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { Stdin = Stdio.Piped };
+    /// Assert.Equal(Stdio.Piped, options.Stdin);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public Stdio Stdin { get; set; }
 
     /// <summary>
@@ -120,18 +170,42 @@ public class CommandOptions
     /// Gets or sets a value indicating whether to load the user profile.
     /// </summary>
     /// <value><c>true</c> to load the user profile; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { LoadUserProfile = true };
+    /// Assert.True(options.LoadUserProfile);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool LoadUserProfile { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether to create a window for the process.
     /// </summary>
     /// <value><c>true</c> to not create a window; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { CreateNoWindow = true };
+    /// Assert.True(options.CreateNoWindow);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool CreateNoWindow { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether to use the operating system shell to start the process.
     /// </summary>
     /// <value><c>true</c> to use the shell; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var options = new CommandOptions { UseShellExecute = true };
+    /// Assert.True(options.UseShellExecute);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool UseShellExecute { get; set; } = false;
 
     /// <summary>

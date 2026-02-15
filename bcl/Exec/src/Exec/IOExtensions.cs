@@ -12,6 +12,20 @@ internal static class IOExtensions
     /// </summary>
     /// <param name="ex">The exception to check.</param>
     /// <returns><c>true</c> if the exception is an input I/O exception; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// try
+    /// {
+    ///     throw new IOException("Broken pipe", unchecked((int)0x8007006D));
+    /// }
+    /// catch (Exception ex)
+    /// {
+    ///     Assert.True(ex.IsInputIOException());
+    /// }
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static bool IsInputIOException(this Exception ex)
     {
         if (ex is AggregateException aggregateException)
@@ -92,6 +106,15 @@ internal static class IOExtensions
     /// <exception cref="ArgumentNullException">
     /// Thrown when the reader or stream is null.
     /// </exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello, world!");
+    /// using var ms = new MemoryStream();
+    /// reader.PipeTo(ms);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void PipeTo(
         this TextReader reader,
         Stream stream,
@@ -128,6 +151,15 @@ internal static class IOExtensions
     /// <exception cref="ArgumentNullException">
     /// Thrown when the reader or file is null.
     /// </exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello, file!");
+    /// var file = new FileInfo("output.txt");
+    /// reader.PipeTo(file);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void PipeTo(
         this TextReader reader,
         FileInfo file,
@@ -160,6 +192,16 @@ internal static class IOExtensions
     /// <exception cref="ArgumentNullException">
     /// Thrown when the reader or lines collection is null.
     /// </exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello\nWorld");
+    /// var lines = new List&lt;string&gt;();
+    /// reader.PipeTo(lines);
+    /// Assert.Equal(2, lines.Count);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void PipeTo(
         this TextReader reader,
         ICollection<string> lines)
@@ -203,6 +245,15 @@ internal static class IOExtensions
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous pipe operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the reader or file is null.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello, file!");
+    /// var file = new FileInfo("output.txt");
+    /// await reader.PipeToAsync(file);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static Task PipeToAsync(
         this TextReader reader,
         FileInfo file,
@@ -318,6 +369,15 @@ internal static class IOExtensions
     /// <exception cref="ArgumentNullException">
     /// Thrown when the reader or stream is null.
     /// </exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello, world!");
+    /// using var ms = new MemoryStream();
+    /// await reader.PipeToAsync(ms);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static Task PipeToAsync(
         this TextReader reader,
         Stream stream,
@@ -346,6 +406,16 @@ internal static class IOExtensions
     /// <param name="reader">The text reader to read from.</param>
     /// <param name="chars">The span buffer to read characters into.</param>
     /// <returns>The number of characters read into the buffer.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello");
+    /// Span&lt;char&gt; buffer = stackalloc char[10];
+    /// int read = reader.Read(buffer);
+    /// Assert.Equal(5, read);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static int Read(this TextReader reader, Span<char> chars)
     {
         var buffer = ArrayPool<char>.Shared.Rent(chars.Length);
@@ -370,6 +440,16 @@ internal static class IOExtensions
     /// <param name="chars">The memory buffer to read characters into.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous read operation.</param>
     /// <returns>A task that represents the asynchronous read operation. The result contains the number of characters read.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello");
+    /// var buffer = new Memory&lt;char&gt;(new char[10]);
+    /// int read = await reader.ReadAsync(buffer);
+    /// Assert.Equal(5, read);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static Task<int> ReadAsync(this TextReader reader, Memory<char> chars, CancellationToken cancellationToken = default)
     {
         var buffer = ArrayPool<char>.Shared.Rent(chars.Length);
@@ -395,6 +475,16 @@ internal static class IOExtensions
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous write operation.</param>
     /// <returns>A task that represents the asynchronous write operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the writer is null.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var writer = new StringWriter();
+    /// var chars = "Hello".AsMemory();
+    /// await writer.WriteAsync(chars);
+    /// Assert.Equal("Hello", writer.ToString());
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static Task WriteAsync(this TextWriter writer, ReadOnlyMemory<char> chars, CancellationToken cancellationToken = default)
     {
         var buffer = ArrayPool<char>.Shared.Rent(chars.Length);
@@ -416,6 +506,16 @@ internal static class IOExtensions
     /// <param name="reader">The text reader to read from.</param>
     /// <param name="bufferSize">The size of the buffer to use. Defaults to 4096.</param>
     /// <exception cref="ArgumentNullException">Thrown when the writer or reader is null.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var reader = new StringReader("Hello");
+    /// using var writer = new StringWriter();
+    /// writer.Write(reader);
+    /// Assert.Equal("Hello", writer.ToString());
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void Write(this TextWriter writer, TextReader reader, int bufferSize = -1)
     {
         if (writer is null)
@@ -458,6 +558,16 @@ internal static class IOExtensions
     /// <param name="bufferSize">The size of the buffer to use. Defaults to 4096.</param>
     /// <param name="leaveOpen">Instructs to leave the stream open.</param>
     /// <exception cref="ArgumentNullException">Thrown when writer or stream is null.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var ms = new MemoryStream(Encoding.UTF8.GetBytes("Hello"));
+    /// using var writer = new StringWriter();
+    /// writer.Write(ms);
+    /// Assert.Equal("Hello", writer.ToString());
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void Write(this TextWriter writer, Stream stream, Encoding? encoding = null, int bufferSize = -1, bool leaveOpen = false)
     {
         if (writer is null)
@@ -483,6 +593,17 @@ internal static class IOExtensions
     /// <param name="encoding">The encoding to use. Defaults to UTF8.</param>
     /// <param name="bufferSize">The size of the buffer to use. Defaults to 4096.</param>
     /// <exception cref="ArgumentNullException">Thrown when writer or file is null.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var file = new FileInfo("test.txt");
+    /// File.WriteAllText(file.FullName, "Hello");
+    /// using var writer = new StringWriter();
+    /// writer.Write(file);
+    /// Assert.Equal("Hello", writer.ToString());
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static void Write(this TextWriter writer, FileInfo file, Encoding? encoding = null, int bufferSize = -1)
     {
         if (writer is null)
