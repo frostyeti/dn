@@ -22,14 +22,12 @@ If `mise` is unavailable:
 Address `dotnet fmt` warnings whenever possible as part of the same change.
 
 ## Documentation Requirements
-- Document all non-private methods.
-- Document classes and methods.
-- Include code examples for every documented class and method (no exceptions).
-- Use XML docs with language-tagged code examples:
-  - `<example>` with `<code lang="csharp">...</code>`
+- Document ALL non-private members (classes, structs, interfaces, constructors, properties, methods, operators).
+- Use XML docs with language-tagged code examples for ALL non-private classes AND ALL non-private members:
+  - Every `<summary>` must be accompanied by a `<remarks>` containing `<example>` with `<code lang="csharp">...</code>`
   - `<example>` must be within the `<remarks>` element
-  - `<code>` must have actual code samples and not placeholders such as "invoke member here", TODOs, or pseudocode.
-  - XML doc comments must be attached to the member declaration (place docs before attributes so analyzers bind them correctly).
+  - `<code>` must have actual executable code samples, NOT placeholders such as "invoke member here", "TODO", or pseudocode
+  - XML doc comments must be attached to the member declaration (place docs before attributes so analyzers bind them correctly)
 - XML docs must be complete for public and internal APIs:
   - Include `<summary>` on all documented members/types.
   - Include `<param>` for every method/constructor parameter.
@@ -37,6 +35,16 @@ Address `dotnet fmt` warnings whenever possible as part of the same change.
   - Include `<typeparam>` for every generic type/method parameter.
   - Constructor summaries should start with standard phrasing: `Initializes a new instance of the ... class.`
 - Keep XML docs warning-clean for StyleCop documentation analyzers (for example `SA1611`, `SA1615`, `SA1618`, `SA1642`).
+
+### Documentation Validation
+Run the validation script to check for missing code examples:
+```bash
+./scripts/validate-docs.sh
+```
+This script MUST pass before any changes can be committed. It checks:
+- Every non-private member has a `<summary>` element
+- Every `<summary>` has a corresponding `<example>` with `<code lang="csharp">`
+- No placeholder text in code examples
 
 ## Testing Requirements
 - Use xUnit 3 style tests.
