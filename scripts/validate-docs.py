@@ -48,9 +48,9 @@ PLACEHOLDER_PATTERNS = [
     r"\.\.\.\.\.\.",  # Five or more dots
 ]
 
-# Patterns for non-private member declarations
+# Patterns for non-private member declarations (excluding internal)
 NON_PRIVATE_PATTERN = re.compile(
-    r'^\s*(public|internal|protected|protected\s+internal)\s+'
+    r'^\s*(public|protected|protected\s+internal)\s+'
     r'(?:static\s+|override\s+|virtual\s+|abstract\s+|sealed\s+|readonly\s+|partial\s+)*'
     r'(?:class|struct|interface|enum|delegate|void|async|'
     r'(?:[\w<>?,\s\[\]]+)\s+[~\w]+\s*\()',
@@ -110,19 +110,19 @@ def extract_xml_doc_blocks(content: str) -> list[XmlDocBlock]:
         else:
             # Non-comment line - check if it's a member declaration
             if current_block is not None:
-                # Check if this line is a non-private member
+                # Check if this line is a non-private member (excluding internal)
                 for pattern in [
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+.*\s+(\w+)\s*\(',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+(?:static\s+)?(\w+)\s*\{',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+(?:static\s+)?(?:readonly\s+)?(\w+)\s+(\w+)\s*\{',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+(?:static\s+)?(?:class|struct|interface|enum)\s+(\w+)',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+implicit\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+explicit\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+static\s+implicit\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+static\s+explicit\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+static\s+\w+\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+\w+\s+operator',
-                    r'^\s*(public|internal|protected|protected\s+internal)\s+(?:static\s+)?(?:\w+\s+)?operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+.*\s+(\w+)\s*\(',
+                    r'^\s*(public|protected|protected\s+internal)\s+(?:static\s+)?(\w+)\s*\{',
+                    r'^\s*(public|protected|protected\s+internal)\s+(?:static\s+)?(?:readonly\s+)?(\w+)\s+(\w+)\s*\{',
+                    r'^\s*(public|protected|protected\s+internal)\s+(?:static\s+)?(?:class|struct|interface|enum)\s+(\w+)',
+                    r'^\s*(public|protected|protected\s+internal)\s+implicit\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+explicit\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+static\s+implicit\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+static\s+explicit\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+static\s+\w+\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+\w+\s+operator',
+                    r'^\s*(public|protected|protected\s+internal)\s+(?:static\s+)?(?:\w+\s+)?operator',
                 ]:
                     match = re.search(pattern, line)
                     if match:

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/FrostYeti.DotEnv.csproj" />
+  <Project Path="test/FrostYeti.DotEnv.Tests.csproj" />
+</Solution>
