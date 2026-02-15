@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 using FrostYeti.Colors;
 
 namespace FrostYeti;
@@ -36,6 +38,120 @@ public static class Ansi
             return string.Empty;
 
         return emojii;
+    }
+
+    /// <summary>
+    /// Applies the specified ANSI codes to the given text. If the current ANSI mode is None, returns the original text without modification.
+    /// </summary>
+    /// <param name="text">The text to which ANSI codes will be applied.</param>
+    /// <param name="codes">One or more ANSI code strings (e.g., "31" for red, "1" for bold).</param>
+    /// <returns>The text wrapped with ANSI escape codes if mode is not None; otherwise, the original text.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var text = Ansi.Apply("red bold text", "31", "1");
+    /// Assert.Equal("\u001b[31;1mred bold text\u001b[0m", text);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public static string Apply(string text, params string[] codes)
+    {
+        if (AnsiSettings.Current.Mode == AnsiMode.None)
+            return text;
+
+        var startCodes = string.Join(";", codes);
+        return $"\u001b[{startCodes}m{text}\u001b[0m";
+    }
+
+    /// <summary>
+    /// Applies the specified ANSI code functions to the given text. If the current ANSI mode is None, returns the original text without modification.
+    /// </summary>
+    /// <param name="text">The text to which ANSI code functions will be applied.</param>
+    /// <param name="codeFuncs">One or more functions that take a string and return a string with ANSI codes applied.</param>
+    /// <returns>
+    /// The text with the specified ANSI code functions applied, or the original text if mode is None.
+    /// </returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var text = Ansi.Apply("red bold text", Ansi.Red, Ansi.Bold);
+    /// Assert.Equal("\u001b[31m\u001b[1mred bold text\u001b[39m\u001b[22m", text);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public static string Apply(string text, params Func<string, string>[] codeFuncs)
+    {
+        if (AnsiSettings.Current.Mode == AnsiMode.None)
+            return text;
+
+        foreach (var func in codeFuncs)
+        {
+            text = func(text);
+        }
+
+        return text;
+    }
+
+     /// <summary>
+    /// Determines if the terminal is ANSI-compatible by checking the TERM environment variable against a set of known patterns, with optional additional tests.
+    /// </summary>
+    /// <param name="color24bit">The 24-bit RGB color to use if the terminal supports 24-bit color.</param>
+    /// <param name="color8bit">The 8-bit RGB color to use if the terminal supports 8-bit color.</param>
+    /// <param name="color">The ANSI color code to use if the terminal supports only basic colors.</param>
+    /// <returns>A function that applies the appropriate ANSI color codes based on the current ANSI mode.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var colorFunc = Ansi.DecgradeColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 31);
+    /// var coloredText = colorFunc("This text will be colored based on ANSI mode");
+    /// Console.WriteLine(coloredText);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public static Func<string, string> DecgradeColor(Rgb color24bit, Rgb color8bit, int color)
+    {
+        switch (AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.TwentyFourBit:
+                return text => $"\u001b[38;2;{color24bit.R};{color24bit.G};{color24bit.B}m{text}\u001b[39m";
+            case AnsiMode.EightBit:
+                return text => $"\u001b[38;5;{color8bit.To256Color()}m{text}\u001b[39m";
+            case AnsiMode.None:
+                return text => text;
+            default:
+                return text => $"\u001b[{color}m{text}\u001b[39m";
+        }
+    }
+
+    /// <summary>
+    /// Determines if the terminal is ANSI-compatible by checking the TERM environment variable against a set of known patterns, with optional additional tests, and applies background color accordingly.
+    /// </summary>
+    /// <param name="color24bit">The 24-bit RGB color to use for the background if the terminal supports 24-bit color.</param>
+    /// <param name="color8bit">The 8-bit RGB color to use for the background if the terminal supports 8-bit color.</param>
+    /// <param name="color">The ANSI color code to use for the background if the terminal supports only basic colors.</param>
+    /// <returns>A function that applies the appropriate ANSI background color codes based on the current ANSI mode.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var bgColorFunc = Ansi.DecgradeBgColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 41);
+    /// var coloredText = bgColorFunc("This text will have a colored background based on ANSI mode");
+    /// Console.WriteLine(coloredText);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public static Func<string, string> DegradeBgColor(Rgb color24bit, Rgb color8bit, int color)
+    {
+        switch (AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.TwentyFourBit:
+                return text => $"\u001b[48;2;{color24bit.R};{color24bit.G};{color24bit.B}m{text}\u001b[49m";
+            case AnsiMode.EightBit:
+                return text => $"\u001b[48;5;{color8bit.To256Color()}m{text}\u001b[49m";
+            case AnsiMode.None:
+                return text => text;
+            default:
+                return text => $"\u001b[{color}m{text}\u001b[49m";
+        }
     }
 
     /// <summary>
