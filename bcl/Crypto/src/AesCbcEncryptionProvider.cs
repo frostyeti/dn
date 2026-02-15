@@ -5,6 +5,13 @@ using System.Security.Cryptography;
 // Helper methods are organized near their usage for clarity.
 #pragma warning disable SA1204
 
+// SCS0013: Potential usage of weak CipherMode.
+// AES-CBC mode is used here with proper security mitigations:
+// 1. Encrypt-then-MAC: HMAC is computed over ciphertext, verified before decryption
+// 2. Constant-time HMAC comparison using FixedTimeEquals prevents timing attacks
+// 3. Decryption only proceeds after HMAC validation succeeds
+#pragma warning disable SCS0013
+
 namespace FrostYeti.Crypto;
 
 /// <summary>
@@ -15,6 +22,8 @@ namespace FrostYeti.Crypto;
 /// <para>
 /// The provider uses an encrypt-then-MAC approach where data is encrypted first,
 /// and then an HMAC is computed over the ciphertext to ensure integrity.
+/// HMAC verification uses constant-time comparison via <see cref="CryptographicOperations.FixedTimeEquals"/>
+/// to prevent timing attacks before decryption proceeds.
 /// </para>
 /// <para>
 /// Binary layout:
@@ -528,3 +537,6 @@ public sealed class AesCbcEncryptionProvider : IEncryptionProvider
         return (saltSize, keySize, HashType.FromId(kdfHashId), HashType.FromId(hmacHashId), iterations, metadataSize);
     }
 }
+
+#pragma warning restore SCS0013
+#pragma warning restore SA1204
