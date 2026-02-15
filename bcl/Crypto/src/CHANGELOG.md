@@ -1,5 +1,14 @@
 # FrostYeti.Crypto Changelog
 
+## 0.0.0-alpha.2
+
+- Replace Pbkdf2Hash with HashType, matching Go implementation IDs.
+- Replace AesEncryptionProvider, AesEncryptionHeader, and AesEncryptionProviderOptions
+  with new AesCbcEncryptionProvider that uses Span<byte> and BinaryPrimitives.
+- Binary format is now compatible with Go aescbc implementation.
+- Support for SHA224, SHA3-224, and BLAKE2B hash algorithms for HMAC and PBKDF2.
+- Add metadata support to AesCbcEncryptionProvider.
+
 ## 0.0.0-alpha.0
 
 - Aes 256 CBC Encryption Provider which encrypts then MACS.

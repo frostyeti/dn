@@ -14,6 +14,16 @@ namespace FrostYeti.Crypto
     /// hash with the given hash algorithm. The default encoding is UTF-8
     /// with no Byte Order Mark ("BOM").
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var memoryStream = new MemoryStream();
+    /// using var hmacStream = new HmacStream(memoryStream, true);
+    /// hmacStream.Write("Hello, World!"u8.ToArray(), 0, 13);
+    /// hmacStream.Flush();
+    /// </code>
+    /// </example>
+    /// </remarks>
     public class HmacStream : Stream
     {
         private readonly Stream innerStream;
@@ -65,11 +75,11 @@ namespace FrostYeti.Crypto
             Stream innerStream,
             bool write,
             Encoding encoding,
-            Pbkdf2Hash keyedHashAlgorithmType,
+            HashType keyedHashAlgorithmType,
             byte[] key)
             : this(innerStream, write, encoding, HashAlgorithmName.SHA256)
         {
-            var algo = keyedHashAlgorithmType.CreateHmac(key);
+            var algo = (HMAC)keyedHashAlgorithmType.CreateHmac(key);
             this.endOfStreamMarker = new byte[algo.HashSize];
             this.signer = algo;
         }
@@ -137,6 +147,16 @@ namespace FrostYeti.Crypto
         /// <summary>
         /// Flushes the write stream, if there is one.
         /// </summary>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var hmacStream = new HmacStream(memoryStream, true);
+        /// hmacStream.Write(new byte[] { 1, 2, 3 }, 0, 3);
+        /// hmacStream.Flush();
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override void Flush()
         {
             if (this.writer != null)
@@ -150,6 +170,20 @@ namespace FrostYeti.Crypto
         /// <param name="offset">The offset from the position of the stream.</param>
         /// <param name="count">The number of bytes to read to the buffer.</param>
         /// <returns>The number of bytes read.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var writeStream = new HmacStream(memoryStream, true);
+        /// writeStream.Write(new byte[] { 1, 2, 3 }, 0, 3);
+        /// writeStream.Flush();
+        /// memoryStream.Position = 0;
+        /// using var readStream = new HmacStream(memoryStream, false);
+        /// var buffer = new byte[3];
+        /// var bytesRead = readStream.Read(buffer, 0, 3);
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (this.reader == null)
@@ -187,6 +221,15 @@ namespace FrostYeti.Crypto
         /// <param name="offset"> The offset.</param>
         /// <param name="origin"> The origin.</param>
         /// <returns>a long.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var hmacStream = new HmacStream(memoryStream, true);
+        /// Assert.Throws&lt;NotSupportedException&gt;(() => hmacStream.Seek(0, SeekOrigin.Begin));
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override long Seek(long offset, SeekOrigin origin)
         {
             throw new NotSupportedException();
@@ -196,6 +239,15 @@ namespace FrostYeti.Crypto
         /// Not supported.
         /// </summary>
         /// <param name="value"> The length.</param>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var hmacStream = new HmacStream(memoryStream, true);
+        /// Assert.Throws&lt;NotSupportedException&gt;(() => hmacStream.SetLength(100));
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
@@ -207,6 +259,15 @@ namespace FrostYeti.Crypto
         /// <param name="buffer">That data to write to the stream.</param>
         /// <param name="offset">The offset from the position of the inner stream.</param>
         /// <param name="count">The number of bytes that should be written.</param>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var hmacStream = new HmacStream(memoryStream, true);
+        /// hmacStream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (this.writer == null)
@@ -268,6 +329,16 @@ namespace FrostYeti.Crypto
         /// <summary>
         /// Writes the end of the stream.
         /// </summary>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var memoryStream = new MemoryStream();
+        /// using var hmacStream = new HmacStream(memoryStream, true);
+        /// hmacStream.Write(new byte[] { 1, 2, 3 }, 0, 3);
+        /// // WriteEndOfStream is called automatically during Dispose
+        /// </code>
+        /// </example>
+        /// </remarks>
         protected virtual void WriteEndOfStream()
         {
             if (this.writer is null)

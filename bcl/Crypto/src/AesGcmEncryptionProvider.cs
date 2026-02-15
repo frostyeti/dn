@@ -83,11 +83,11 @@ public class AesGcmEncryptionProvider : IEncryptionProvider
         RandomNumberGenerator.Fill(nonce);
 
         var key = Rfc2898DeriveBytes.Pbkdf2(
-            this.options.Key,
-            salt,
-            this.options.Iterations,
-            this.options.Hash,
-            this.options.KeyByteSize);
+                    this.options.Key,
+                    salt,
+                    this.options.Iterations,
+                    this.options.Hash.ToHashAlgorithmName(),
+                    this.options.KeyByteSize);
 
         // Encrypt
         using var aes = new AesGcm(key, AesGcm.TagByteSizes.MaxSize);
@@ -163,13 +163,13 @@ public class AesGcmEncryptionProvider : IEncryptionProvider
 
         var cipheredBytes = encryptedData.Slice(index);
 
-        var hash = Pbkdf2Hash.FromId(hashAlgorithmId);
+        var hash = HashType.FromId(hashAlgorithmId);
 
         var key = Rfc2898DeriveBytes.Pbkdf2(
             this.options.Key,
             salt.ToArray(),
             iterations,
-            hash,
+            hash.ToHashAlgorithmName(),
             keySize);
 
         // Decrypt
@@ -194,7 +194,7 @@ public class AesGcmEncryptionProviderOptions
 
     public short SaltSize { get; set; } = 32;
 
-    public Pbkdf2Hash Hash { get; set; } = Pbkdf2Hash.SHA256;
+    public HashType Hash { get; set; } = HashType.SHA256;
 
     public int KeyByteSize { get; set; } = 32;
 

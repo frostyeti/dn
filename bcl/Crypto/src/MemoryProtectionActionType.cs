@@ -3,6 +3,14 @@ namespace FrostYeti.Crypto
     /// <summary>
     /// The type of action for the delegate <see cref="FrostYeti.Crypto.MemoryProtectionAction"/>.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var action = MemoryProtectionActionType.Encrypt;
+    /// Assert.Equal(MemoryProtectionActionType.Encrypt, action);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public enum MemoryProtectionActionType
     {
         /// <summary>Encrypt data.</summary>

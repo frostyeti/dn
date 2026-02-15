@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -35,11 +35,29 @@ public sealed class Salsa20 : SymmetricAlgorithm
     /// <summary>
     /// Gets or sets the number of rounds that should be used.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var salsa = Salsa20.Create();
+    /// salsa.Rounds = SalsaRounds.Twelve;
+    /// Assert.Equal(SalsaRounds.Twelve, salsa.Rounds);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public SalsaRounds Rounds { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether gets or sets whether or skip a XOR operation during the transform block.
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var salsa = Salsa20.Create();
+    /// salsa.SkipXor = true;
+    /// Assert.True(salsa.SkipXor);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public bool SkipXor { get; set; }
 
     /// <summary>
@@ -71,6 +89,15 @@ public sealed class Salsa20 : SymmetricAlgorithm
     /// Creates a new instance of <see cref="Salsa20" />.
     /// </summary>
     /// <returns>A new instance of <see cref="Salsa20"/>.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// using var salsa = Salsa20.Create();
+    /// salsa.Key = new byte[32];
+    /// salsa.GenerateIV();
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static new Salsa20 Create()
     {
         return new Salsa20();

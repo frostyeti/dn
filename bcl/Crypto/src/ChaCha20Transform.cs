@@ -10,7 +10,16 @@ namespace FrostYeti.Crypto
     /// <summary>
     /// The ChaCha20 implementation.
     /// </summary>
-    /// <remarks>https://cr.yp.to/chacha/chacha-20080128.pdf .</remarks>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var key = new byte[32];
+    /// var iv = new byte[12];
+    /// var transform = new ChaCha20Transform(key, iv, ChaChaRound.Twenty);
+    /// </code>
+    /// </example>
+    /// <para>See https://cr.yp.to/chacha/chacha-20080128.pdf for the specification.</para>
+    /// </remarks>
     internal class ChaCha20Transform : ICryptoTransform
     {
         // https://dotnetfiddle.net/Bh4ijW

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FrostYeti.Crypto;
 
@@ -6,6 +6,15 @@ namespace FrostYeti.Crypto;
 /// A contract for a cryptographically secure random
 /// number generator.
 /// </summary>
+/// <remarks>
+/// <example>
+/// <code lang="csharp">
+/// using var rng = new Csrng();
+/// var bytes = rng.NextBytes(32);
+/// Assert.Equal(32, bytes.Length);
+/// </code>
+/// </example>
+/// </remarks>
 public interface ICsrng
 {
     void GetBytes(byte[] bytes);

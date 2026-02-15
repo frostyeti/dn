@@ -59,6 +59,15 @@ namespace FrostYeti.Crypto
         /// Creates a new instance of <see cref="FrostYeti.Crypto.ChaCha20" /> class.
         /// </summary>
         /// <returns>A new instance of <see cref="ChaCha20"/>.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var chacha = ChaCha20.Create();
+        /// chacha.Key = new byte[32];
+        /// chacha.GenerateIV();
+        /// </code>
+        /// </example>
+        /// </remarks>
         public static new ChaCha20 Create()
         {
             return new ChaCha20();
@@ -71,6 +80,16 @@ namespace FrostYeti.Crypto
         /// <param name="rgbKey">The secret key to use for the symmetric algorithm.</param>
         /// <param name="rgbIV">The initialization vector to use for the symmetric algorithm.</param>
         /// <returns>A symmetric decryptor object.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code lang="csharp">
+        /// using var chacha = ChaCha20.Create();
+        /// var key = new byte[32];
+        /// var iv = new byte[12];
+        /// using var decryptor = chacha.CreateDecryptor(key, iv);
+        /// </code>
+        /// </example>
+        /// </remarks>
         public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[]? rgbIV)
         {
             if (rgbIV is null)
