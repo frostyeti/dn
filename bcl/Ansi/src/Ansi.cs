@@ -75,7 +75,7 @@ public static class Ansi
     /// <example>
     /// <code lang="csharp">
     /// var text = Ansi.Apply("red bold text", Ansi.Red, Ansi.Bold);
-    /// Assert.Equal("\u001b[31m\u001b[1mred bold text\u001b[39m\u001b[22m", text);
+    /// Assert.Equal("\u001b[1m\u001b[31mred bold text\u001b[39m\u001b[22m", text);
     /// </code>
     /// </example>
     /// </remarks>
@@ -92,8 +92,9 @@ public static class Ansi
         return text;
     }
 
-     /// <summary>
-    /// Determines if the terminal is ANSI-compatible by checking the TERM environment variable against a set of known patterns, with optional additional tests.
+    /// <summary>
+    /// Degrades a 24-bit RGB color to the appropriate ANSI color codes based on the current ANSI mode,
+    /// allowing for graceful fallback to lower color modes when necessary.
     /// </summary>
     /// <param name="color24bit">The 24-bit RGB color to use if the terminal supports 24-bit color.</param>
     /// <param name="color8bit">The 8-bit RGB color to use if the terminal supports 8-bit color.</param>
@@ -102,13 +103,13 @@ public static class Ansi
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var colorFunc = Ansi.DecgradeColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 31);
+    /// var colorFunc = Ansi.DegradeColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 31);
     /// var coloredText = colorFunc("This text will be colored based on ANSI mode");
     /// Console.WriteLine(coloredText);
     /// </code>
     /// </example>
     /// </remarks>
-    public static Func<string, string> DecgradeColor(Rgb color24bit, Rgb color8bit, int color)
+    public static Func<string, string> DegradeColor(Rgb color24bit, Rgb color8bit, int color)
     {
         switch (AnsiSettings.Current.Mode)
         {
@@ -124,7 +125,8 @@ public static class Ansi
     }
 
     /// <summary>
-    /// Determines if the terminal is ANSI-compatible by checking the TERM environment variable against a set of known patterns, with optional additional tests, and applies background color accordingly.
+    /// Degrades a 24-bit RGB background color to the appropriate ANSI background color codes based on the current ANSI mode,
+    /// allowing for graceful fallback to lower color modes when necessary.
     /// </summary>
     /// <param name="color24bit">The 24-bit RGB color to use for the background if the terminal supports 24-bit color.</param>
     /// <param name="color8bit">The 8-bit RGB color to use for the background if the terminal supports 8-bit color.</param>
@@ -133,7 +135,7 @@ public static class Ansi
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var bgColorFunc = Ansi.DecgradeBgColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 41);
+    /// var bgColorFunc = Ansi.DegradeBgColor(new Rgb(255, 0, 0), new Rgb(5, 0, 0), 41);
     /// var coloredText = bgColorFunc("This text will have a colored background based on ANSI mode");
     /// Console.WriteLine(coloredText);
     /// </code>
