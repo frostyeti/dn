@@ -3,8 +3,34 @@ using System.Runtime.InteropServices;
 
 namespace FrostYeti;
 
+/// <summary>
+/// Provides methods for detecting terminal ANSI capabilities.
+/// </summary>
+/// <remarks>
+/// <example>
+/// <code lang="csharp">
+/// var settings = AnsiDetector.Detect();
+/// Console.WriteLine($"Detected mode: {settings.Mode}");
+/// </code>
+/// </example>
+/// </remarks>
 public static class AnsiDetector
 {
+    /// <summary>
+    /// Detects and returns the ANSI settings for the current terminal.
+    /// </summary>
+    /// <returns>An <see cref="AnsiSettings"/> instance with detected capabilities.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var settings = AnsiDetector.Detect();
+    /// if (settings.Mode == AnsiMode.TwentyFourBit)
+    /// {
+    ///     Console.WriteLine("True color support detected!");
+    /// }
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static AnsiSettings Detect()
     {
         var settings = new AnsiSettings();
@@ -15,12 +41,41 @@ public static class AnsiDetector
         return settings;
     }
 
+    /// <summary>
+    /// Enables virtual terminal processing on Windows consoles.
+    /// </summary>
+    /// <param name="stdError">If <c>true</c>, enables for standard error; otherwise, enables for standard output.</param>
+    /// <returns><c>true</c> if virtual terminal processing was enabled successfully; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    /// {
+    ///     var enabled = AnsiDetector.EnableVirtualTerminalProcessing();
+    ///     Console.WriteLine($"VT processing enabled: {enabled}");
+    /// }
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static bool EnableVirtualTerminalProcessing(bool stdError = false)
     {
         var handle = GetStdPipeHandle(stdError);
         return InternalEnableVirtualTerminalProcessing(handle);
     }
 
+    /// <summary>
+    /// Checks if the TERM environment variable matches known ANSI-compatible terminal types.
+    /// </summary>
+    /// <param name="tests">Additional patterns to match against the TERM variable.</param>
+    /// <returns><c>true</c> if the terminal is ANSI-compatible; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var isCompatible = AnsiDetector.IsTermVariableAnsiCompatible();
+    /// Console.WriteLine($"Terminal ANSI compatible: {isCompatible}");
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static bool IsTermVariableAnsiCompatible(params string[] tests)
     {
         var set = new List<string>()
@@ -64,6 +119,18 @@ public static class AnsiDetector
         return false;
     }
 
+    /// <summary>
+    /// Detects the appropriate ANSI mode for the current terminal environment.
+    /// </summary>
+    /// <returns>The detected <see cref="AnsiMode"/> value.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var mode = AnsiDetector.DetectMode();
+    /// Console.WriteLine($"Detected ANSI mode: {mode}");
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static AnsiMode DetectMode()
     {
         var term = Environment.GetEnvironmentVariable("GNOMESTACK_TERM");
