@@ -1,9 +1,24 @@
 using FrostYeti;
+using FrostYeti.Colors;
 
 namespace FrostYeti.Tests;
 
-public class AnsiTests
+[Collection("AnsiSettings")]
+public class AnsiTests : IDisposable
 {
+    private readonly AnsiSettings originalSettings;
+
+    public AnsiTests()
+    {
+        this.originalSettings = AnsiSettings.Current;
+        AnsiSettings.Current = new AnsiSettings { Mode = AnsiMode.TwentyFourBit };
+    }
+
+    public void Dispose()
+    {
+        AnsiSettings.Current = this.originalSettings;
+    }
+
     [Fact]
     public void Red_Should_Apply_Ansi_Format()
     {
@@ -157,5 +172,138 @@ public class AnsiTests
         Assert.Equal("\u001b[48;2;18;52;86mtext\u001b[49m", Ansi.BgRgb(0x123456, "text"));
     }
 
-    // Rgb and BgRgb with Rgb struct are not tested here due to dependency on FrostYeti.Colors.Rgb
+    [Fact]
+    public void Rgb_Should_Apply_Ansi_Format_With_Rgb_Struct()
+    {
+        var color = new Rgb(255, 128, 64);
+        Assert.Equal("\u001b[38;2;255;128;64mtext\u001b[39m", Ansi.Rgb(color, "text"));
+    }
+
+    [Fact]
+    public void BgRgb_Should_Apply_Ansi_Format_With_Rgb_Struct()
+    {
+        var color = new Rgb(255, 128, 64);
+        Assert.Equal("\u001b[48;2;255;128;64mtext\u001b[49m", Ansi.BgRgb(color, "text"));
+    }
+
+    [Collection("AnsiSettings")]
+    public class AnsiModeNoneTests : IDisposable
+    {
+        private readonly AnsiSettings originalSettings;
+
+        public AnsiModeNoneTests()
+        {
+            this.originalSettings = AnsiSettings.Current;
+            AnsiSettings.Current = new AnsiSettings { Mode = AnsiMode.None };
+        }
+
+        public void Dispose()
+        {
+            AnsiSettings.Current = this.originalSettings;
+        }
+
+        [Fact]
+        public void Red_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Red("text"));
+        }
+
+        [Fact]
+        public void Green_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Green("text"));
+        }
+
+        [Fact]
+        public void Blue_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Blue("text"));
+        }
+
+        [Fact]
+        public void Bold_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Bold("text"));
+        }
+
+        [Fact]
+        public void Italic_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Italic("text"));
+        }
+
+        [Fact]
+        public void Underline_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Underline("text"));
+        }
+
+        [Fact]
+        public void BgRed_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.BgRed("text"));
+        }
+
+        [Fact]
+        public void Rgb_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Rgb(0x123456, "text"));
+        }
+
+        [Fact]
+        public void Rgb_With_Struct_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            var color = new Rgb(255, 128, 64);
+            Assert.Equal("text", Ansi.Rgb(color, "text"));
+        }
+
+        [Fact]
+        public void BgRgb_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.BgRgb(0x123456, "text"));
+        }
+
+        [Fact]
+        public void BgRgb_With_Struct_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            var color = new Rgb(255, 128, 64);
+            Assert.Equal("text", Ansi.BgRgb(color, "text"));
+        }
+
+        [Fact]
+        public void Rgb8_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Rgb8(123, "text"));
+        }
+
+        [Fact]
+        public void BgRgb8_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.BgRgb8(123, "text"));
+        }
+
+        [Fact]
+        public void Reset_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("text", Ansi.Reset("text"));
+        }
+
+        [Fact]
+        public void Reset_No_Args_Should_Return_Empty_When_Mode_Is_None()
+        {
+            Assert.Equal(string.Empty, Ansi.Reset());
+        }
+
+        [Fact]
+        public void Emoji_Should_Return_Empty_When_Mode_Is_None()
+        {
+            Assert.Equal(string.Empty, Ansi.Emoji("😀"));
+        }
+
+        [Fact]
+        public void Link_Should_Return_Plain_Text_When_Mode_Is_None()
+        {
+            Assert.Equal("link", Ansi.Link("link"));
+        }
+    }
 }
