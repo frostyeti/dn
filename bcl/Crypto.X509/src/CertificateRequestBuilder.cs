@@ -340,7 +340,7 @@ public class CertificateRequestBuilder : ICertificateRequestBuilder
         return this;
     }
 
-/// <summary>
+    /// <summary>
     /// Sets the enhanced key usages for the certificate with critical flag.
     /// </summary>
     /// <param name="critical">Whether the extension is critical.</param>

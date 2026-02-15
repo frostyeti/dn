@@ -109,6 +109,35 @@ public class CertificateChainTests
     }
 
     [Fact]
+    public void Create_Server_Certificate_With_Wildcard_Dns()
+    {
+        using var rootCa = CreateRootCa();
+        using var intermediateCa = CreateIntermediateCa(rootCa);
+
+        using var wildcardCert = new CertificateRequestBuilder()
+            .WithSubject("CN=*.test.com, O=Test Organization, C=US")
+            .WithIssuer(intermediateCa)
+            .WithDnsNames("*.test.com", "test.com")
+            .WithKeyUsage(X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment)
+            .WithEnhancedKeyUsages(EnhancedKeyUsageOids.ServerAuthentication)
+            .WithRsa(2048)
+            .WithDateRange(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddYears(2))
+            .BuildCertificate();
+
+        Assert.NotNull(wildcardCert);
+        Assert.Equal("CN=*.test.com, O=Test Organization, C=US", wildcardCert.Subject);
+        Assert.True(wildcardCert.HasPrivateKey);
+
+        var san = wildcardCert.Extensions.OfType<X509SubjectAlternativeNameExtension>().FirstOrDefault();
+        Assert.NotNull(san);
+
+        // Verify the SAN extension was created (wildcard support is handled by the SAN builder)
+        var sanData = san.RawData;
+        Assert.NotNull(sanData);
+        Assert.True(sanData.Length > 0);
+    }
+
+    [Fact]
     public void Create_Device_Certificate_Signed_By_Intermediate()
     {
         using var rootCa = CreateRootCa();
