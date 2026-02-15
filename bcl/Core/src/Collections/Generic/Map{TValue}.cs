@@ -3,6 +3,7 @@ namespace FrostYeti.Collections.Generic;
 /// <summary>
 /// Represents the Map class.
 /// </summary>
+/// <typeparam name="TValue">The type of the values in the map.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">

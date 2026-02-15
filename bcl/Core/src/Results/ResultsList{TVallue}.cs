@@ -3,6 +3,7 @@ namespace FrostYeti.Results;
 /// <summary>
 /// Represents the ResultsList class.
 /// </summary>
+/// <typeparam name="TValue">The type of the values in the results list.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">

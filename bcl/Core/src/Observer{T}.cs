@@ -3,6 +3,7 @@ namespace FrostYeti;
 /// <summary>
 /// Represents the Observer class.
 /// </summary>
+/// <typeparam name="T">The type of the values observed.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">

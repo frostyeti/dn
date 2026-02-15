@@ -7,8 +7,6 @@ using System.Text;
 namespace FrostYeti.Text;
 
 /// <summary>Provide a cached reusable instance of <see cref="StringBuilder"/> per thread.</summary>
-// exclude as the source was copied for the dotnet runtime.
-[ExcludeFromCodeCoverage]
 /// <remarks>
 /// <example>
 /// <code lang="csharp">
@@ -18,6 +16,8 @@ namespace FrostYeti.Text;
 /// </code>
 /// </example>
 /// </remarks>
+// exclude as the source was copied for the dotnet runtime.
+[ExcludeFromCodeCoverage]
 public static class StringBuilderCache
 {
     // The value 360 was chosen in discussion with performance experts as a compromise between using

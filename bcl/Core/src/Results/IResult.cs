@@ -55,6 +55,7 @@ public interface IValueResult : IResult
 /// <summary>
 /// Represents the IResult interface.
 /// </summary>
+/// <typeparam name="TError">The type of the error.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">
@@ -73,6 +74,7 @@ public interface IResult<TError> : IResult
 /// <summary>
 /// Represents the IEmptyResult interface.
 /// </summary>
+/// <typeparam name="TError">The type of the error.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">
@@ -88,6 +90,8 @@ public interface IEmptyResult<TError> : IEmptyResult, IResult<TError>
 /// <summary>
 /// Represents the IValueResult interface.
 /// </summary>
+/// <typeparam name="TValue">The type of the value.</typeparam>
+/// <typeparam name="TError">The type of the error.</typeparam>
 /// <remarks>
 /// <example>
 /// <code lang="csharp">
