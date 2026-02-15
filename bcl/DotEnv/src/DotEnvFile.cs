@@ -14,16 +14,16 @@ namespace FrostYeti.DotEnv;
 /// <example>
 /// <code lang="csharp">
 /// // Parse a single file
-/// var doc = DotEnv.ParseFile(".env");
+/// var doc = DotEnvFile.ParseFile(".env");
 ///
 /// // Parse multiple files with optional files (ending with ?)
-/// var doc = DotEnv.ParseFiles(".env", ".env.local?", ".env.production?");
+/// var doc = DotEnvFile.ParseFiles(".env", ".env.local?", ".env.production?");
 ///
 /// // Parse string content
-/// var doc = DotEnv.Parse("KEY=value\nKEY2=value2");
+/// var doc = DotEnvFile.Parse("KEY=value\nKEY2=value2");
 ///
 /// // TryParse without throwing
-/// var result = DotEnv.TryParseFile(".env");
+/// var result = DotEnvFile.TryParseFile(".env");
 /// if (result.IsOk)
 /// {
 ///     var doc = result.Doc;
@@ -31,7 +31,7 @@ namespace FrostYeti.DotEnv;
 /// </code>
 /// </example>
 /// </remarks>
-public static class DotEnv
+public static class DotEnvFile
 {
     /// <summary>
     /// Parses a dotenv content string.
@@ -42,7 +42,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = DotEnv.Parse("KEY=value\nKEY2=\"quoted value\"");
+    /// var doc = DotEnvFile.Parse("KEY=value\nKEY2=\"quoted value\"");
     /// var value = doc.Get("KEY");
     /// </code>
     /// </example>
@@ -60,7 +60,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// var content = "KEY=value"u8;
-    /// var doc = DotEnv.Parse(content);
+    /// var doc = DotEnvFile.Parse(content);
     /// </code>
     /// </example>
     /// </remarks>
@@ -80,7 +80,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = DotEnv.ParseFile(".env");
+    /// var doc = DotEnvFile.ParseFile(".env");
     /// var dbUrl = doc.Get("DATABASE_URL");
     /// </code>
     /// </example>
@@ -104,7 +104,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var result = DotEnv.TryParseFile(".env");
+    /// var result = DotEnvFile.TryParseFile(".env");
     /// if (result.IsOk)
     /// {
     ///     var doc = result.Doc;
@@ -146,7 +146,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// // .env is required, .env.local? is optional
-    /// var doc = DotEnv.ParseFiles(".env", ".env.local?", ".env.production?");
+    /// var doc = DotEnvFile.ParseFiles(".env", ".env.local?", ".env.production?");
     /// </code>
     /// </example>
     /// </remarks>
@@ -165,7 +165,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// var paths = new[] { ".env", ".env.local?", ".env.production?" };
-    /// var doc = DotEnv.ParseFiles(paths);
+    /// var doc = DotEnvFile.ParseFiles(paths);
     /// </code>
     /// </example>
     /// </remarks>
@@ -204,7 +204,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var result = DotEnv.TryParseFiles(".env", ".env.local?");
+    /// var result = DotEnvFile.TryParseFiles(".env", ".env.local?");
     /// if (result.IsOk)
     /// {
     ///     var doc = result.Doc;
@@ -225,7 +225,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// var paths = new[] { ".env", ".env.local?" };
-    /// var result = DotEnv.TryParseFiles(paths);
+    /// var result = DotEnvFile.TryParseFiles(paths);
     /// </code>
     /// </example>
     /// </remarks>
@@ -273,7 +273,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = await DotEnv.ParseFileAsync(".env");
+    /// var doc = await DotEnvFile.ParseFileAsync(".env");
     /// </code>
     /// </example>
     /// </remarks>
@@ -297,7 +297,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var result = await DotEnv.TryParseFileAsync(".env");
+    /// var result = await DotEnvFile.TryParseFileAsync(".env");
     /// if (result.IsOk)
     /// {
     ///     var doc = result.Doc;
@@ -332,7 +332,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = await DotEnv.ParseFilesAsync(new[] { ".env", ".env.local?" });
+    /// var doc = await DotEnvFile.ParseFilesAsync(new[] { ".env", ".env.local?" });
     /// </code>
     /// </example>
     /// </remarks>
@@ -371,7 +371,7 @@ public static class DotEnv
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var result = await DotEnv.TryParseFilesAsync(new[] { ".env", ".env.local?" });
+    /// var result = await DotEnvFile.TryParseFilesAsync(new[] { ".env", ".env.local?" });
     /// </code>
     /// </example>
     /// </remarks>
@@ -418,7 +418,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// using var stream = File.OpenRead(".env");
-    /// var doc = DotEnv.ParseStream(stream);
+    /// var doc = DotEnvFile.ParseStream(stream);
     /// </code>
     /// </example>
     /// </remarks>
@@ -440,7 +440,7 @@ public static class DotEnv
     /// <code lang="csharp">
     /// using var s1 = File.OpenRead(".env");
     /// using var s2 = File.OpenRead(".env.local");
-    /// var doc = DotEnv.ParseStreams(s1, s2);
+    /// var doc = DotEnvFile.ParseStreams(s1, s2);
     /// </code>
     /// </example>
     /// </remarks>
@@ -467,7 +467,7 @@ public static class DotEnv
     /// <example>
     /// <code lang="csharp">
     /// using var stream = File.OpenRead(".env");
-    /// var doc = await DotEnv.ParseStreamAsync(stream);
+    /// var doc = await DotEnvFile.ParseStreamAsync(stream);
     /// </code>
     /// </example>
     /// </remarks>

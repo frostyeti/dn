@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 
@@ -325,8 +326,8 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc1 = DotEnv.Parse("KEY1=value1");
-    /// var doc2 = DotEnv.Parse("KEY2=value2\nKEY1=override");
+    /// var doc1 = DotEnvFile.Parse("KEY1=value1");
+    /// var doc2 = DotEnvFile.Parse("KEY2=value2\nKEY1=override");
     /// doc1.Merge(doc2);
     /// Assert.Equal("override", doc1.Get("KEY1"));
     /// </code>
@@ -349,6 +350,34 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     }
 
     /// <summary>
+    /// Merges a dictionary into this document, overwriting existing keys.
+    /// </summary>
+    /// <param name="dictionary">The dictionary to merge.</param>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var doc = new EnvDoc();
+    /// doc.Set("KEY1", "value1");
+    /// var dict = new Dictionary&lt;string, string&gt; { ["KEY2"] = "value2", ["KEY1"] = "override" };
+    /// doc.Merge(dict);
+    /// Assert.Equal("override", doc.Get("KEY1"));
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public void Merge(IDictionary<string, string> dictionary)
+    {
+        if (dictionary is null)
+        {
+            throw new ArgumentNullException(nameof(dictionary));
+        }
+
+        foreach (var kvp in dictionary)
+        {
+            this.Set(kvp.Key, kvp.Value);
+        }
+    }
+
+    /// <summary>
     /// Creates a new document by merging multiple documents.
     /// </summary>
     /// <param name="docs">The documents to merge.</param>
@@ -356,8 +385,8 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc1 = DotEnv.Parse("KEY1=value1");
-    /// var doc2 = DotEnv.Parse("KEY2=value2");
+    /// var doc1 = DotEnvFile.Parse("KEY1=value1");
+    /// var doc2 = DotEnvFile.Parse("KEY2=value2");
     /// var merged = EnvDoc.Merge(doc1, doc2);
     /// </code>
     /// </example>
@@ -385,7 +414,7 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = DotEnv.ParseFiles(".env", ".env.local?");
+    /// var doc = DotEnvFile.ParseFiles(".env", ".env.local?");
     /// doc.Expand(value => Env.Expand(value));
     /// </code>
     /// </example>
@@ -416,7 +445,7 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var original = DotEnv.Parse("KEY=${HOME}");
+    /// var original = DotEnvFile.Parse("KEY=${HOME}");
     /// var expanded = original.ExpandClone(value => Env.Expand(value));
     /// // original still has "${HOME}", expanded has the actual path
     /// </code>
@@ -452,7 +481,7 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     /// <remarks>
     /// <example>
     /// <code lang="csharp">
-    /// var doc = DotEnv.Parse("KEY1=value1\nKEY2=value2");
+    /// var doc = DotEnvFile.Parse("KEY1=value1\nKEY2=value2");
     /// var dict = doc.ToDictionary();
     /// Assert.Equal("value1", dict["KEY1"]);
     /// </code>
@@ -461,6 +490,78 @@ public sealed class EnvDoc : IEnumerable<EnvElement>
     public IReadOnlyDictionary<string, string> ToDictionary()
     {
         var dict = new Dictionary<string, string>();
+        foreach (var element in this.elements)
+        {
+            if (element is EnvVariable v)
+            {
+                dict[v.Key] = v.Value;
+            }
+        }
+
+        return dict;
+    }
+
+    /// <summary>
+    /// Converts the document to a dictionary with the specified key and value types.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the dictionary keys.</typeparam>
+    /// <typeparam name="TValue">The type of the dictionary values.</typeparam>
+    /// <param name="keySelector">A function to transform the key string to <typeparamref name="TKey"/>.</param>
+    /// <param name="valueSelector">A function to transform the value string to <typeparamref name="TValue"/>.</param>
+    /// <returns>A dictionary containing all variables with transformed keys and values.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var doc = DotEnvFile.Parse("PORT=8080\nTIMEOUT=30");
+    /// var dict = doc.ToDictionary&lt;string, int&gt;(k => k, v => int.Parse(v));
+    /// Assert.Equal(8080, dict["PORT"]);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public IReadOnlyDictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+        Func<string, TKey> keySelector,
+        Func<string, TValue> valueSelector)
+        where TKey : notnull
+    {
+        if (keySelector is null)
+        {
+            throw new ArgumentNullException(nameof(keySelector));
+        }
+
+        if (valueSelector is null)
+        {
+            throw new ArgumentNullException(nameof(valueSelector));
+        }
+
+        var dict = new Dictionary<TKey, TValue>();
+        foreach (var element in this.elements)
+        {
+            if (element is EnvVariable v)
+            {
+                dict[keySelector(v.Key)] = valueSelector(v.Value);
+            }
+        }
+
+        return dict;
+    }
+
+    /// <summary>
+    /// Converts the document to an ordered dictionary preserving the order of variables.
+    /// </summary>
+    /// <returns>An ordered dictionary containing all variables in their original order.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var doc = DotEnvFile.Parse("KEY1=value1\nKEY2=value2\nKEY3=value3");
+    /// var dict = doc.ToOrderedDictionary();
+    /// var keys = dict.Keys.Cast&lt;string&gt;().ToList();
+    /// Assert.Equal(new[] { "KEY1", "KEY2", "KEY3" }, keys);
+    /// </code>
+    /// </example>
+    /// </remarks>
+    public OrderedDictionary ToOrderedDictionary()
+    {
+        var dict = new OrderedDictionary();
         foreach (var element in this.elements)
         {
             if (element is EnvVariable v)

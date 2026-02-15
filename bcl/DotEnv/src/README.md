@@ -22,11 +22,11 @@ A .NET library for parsing and manipulating dotenv (`.env`) files.
 using FrostYeti.DotEnv;
 
 // Parse from string
-var doc = DotEnv.Parse("KEY=value\nKEY2=\"quoted value\"");
+var doc = DotEnvFile.Parse("KEY=value\nKEY2=\"quoted value\"");
 var value = doc.Get("KEY");
 
 // Parse from file
-var doc = DotEnv.ParseFile(".env");
+var doc = DotEnvFile.ParseFile(".env");
 var dbUrl = doc.Get("DATABASE_URL");
 ```
 
@@ -35,14 +35,14 @@ var dbUrl = doc.Get("DATABASE_URL");
 ```csharp
 // .env is required, .env.local? is optional (skipped if missing)
 // Keys from later files override earlier ones
-var doc = DotEnv.ParseFiles(".env", ".env.local?", ".env.production?");
+var doc = DotEnvFile.ParseFiles(".env", ".env.local?", ".env.production?");
 var dbUrl = doc.Get("DATABASE_URL");
 ```
 
 ### TryParse (non-throwing)
 
 ```csharp
-var result = DotEnv.TryParseFiles(".env", ".env.missing");
+var result = DotEnvFile.TryParseFiles(".env", ".env.missing");
 if (result.IsOk)
 {
     var doc = result.Doc;
@@ -63,7 +63,7 @@ Variable expansion and command substitution are handled by `Env.Expand` from
 using FrostYeti;
 using FrostYeti.DotEnv;
 
-var doc = DotEnv.ParseFiles(".env", ".env.local?");
+var doc = DotEnvFile.ParseFiles(".env", ".env.local?");
 doc.Expand(value => Env.Expand(value, new EnvExpandOptions 
 { 
     CommandSubstitution = true,
@@ -87,11 +87,41 @@ doc.AddNewline();
 var envContent = doc.ToString();
 ```
 
+### Merging Dictionaries
+
+```csharp
+var doc = new EnvDoc();
+doc.Set("KEY1", "value1");
+
+// Merge from another EnvDoc
+var other = DotEnvFile.Parse("KEY2=value2\nKEY1=override");
+doc.Merge(other);
+
+// Merge from IDictionary<string, string>
+var dict = new Dictionary<string, string> { ["KEY3"] = "value3" };
+doc.Merge(dict);
+```
+
+### Converting to Dictionaries
+
+```csharp
+var doc = DotEnvFile.Parse("KEY1=value1\nKEY2=value2");
+
+// To unordered dictionary (hash-based)
+var dict = doc.ToDictionary();
+
+// To ordered dictionary (preserves order)
+var ordered = doc.ToOrderedDictionary();
+
+// To dictionary with typed values
+var typed = doc.ToDictionary<string, int>(k => k, v => int.Parse(v));
+```
+
 ### Round-trip Editing
 
 ```csharp
 // Parse, modify, and save back while preserving comments and order
-var doc = DotEnv.ParseFile(".env");
+var doc = DotEnvFile.ParseFile(".env");
 doc.Set("API_KEY", "new-value");
 File.WriteAllText(".env", doc.ToString());
 ```
@@ -127,10 +157,12 @@ Paths ending with `?` are optional:
 // .env is required (throws if missing)
 // .env.local? is optional (skipped if missing)
 // .env.production? is optional
-var doc = DotEnv.ParseFiles(".env", ".env.local?", ".env.production?");
+var doc = DotEnvFile.ParseFiles(".env", ".env.local?", ".env.production?");
 ```
 
 ## Reference
+
+### DotEnvFile Methods
 
 | Method | Description |
 |--------|-------------|
@@ -142,12 +174,17 @@ var doc = DotEnv.ParseFiles(".env", ".env.local?", ".env.production?");
 | `ParseFileAsync(path)` | Async file parse |
 | `ParseStream(stream)` | Parse from stream |
 
-| EnvDoc Method | Description |
-|---------------|-------------|
+### EnvDoc Methods
+
+| Method | Description |
+|--------|-------------|
 | `Get(key)` | Get a variable value |
 | `Set(key, value, quote)` | Set or add a variable |
 | `Remove(key)` | Remove a variable |
 | `Expand(expander)` | Expand all values in-place |
-| `Merge(other)` | Merge another document |
+| `Merge(EnvDoc)` | Merge another document |
+| `Merge(IDictionary)` | Merge from a dictionary |
 | `ToDictionary()` | Convert to dictionary |
+| `ToDictionary<TKey, TValue>()` | Convert to typed dictionary |
+| `ToOrderedDictionary()` | Convert to ordered dictionary |
 | `ToString()` | Serialize to .env format |

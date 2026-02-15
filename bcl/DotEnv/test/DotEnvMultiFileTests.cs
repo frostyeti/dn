@@ -17,7 +17,7 @@ public static class DotEnvMultiFileTests
             File.WriteAllText(tempPath1, "KEY1=value1\nKEY2=value2");
             File.WriteAllText(tempPath2, "KEY2=override\nKEY3=value3");
 
-            var doc = DotEnv.ParseFiles(tempPath1, tempPath2);
+            var doc = DotEnvFile.ParseFiles(tempPath1, tempPath2);
 
             Assert.Equal("value1", doc.Get("KEY1"));
             Assert.Equal("override", doc.Get("KEY2"));
@@ -35,7 +35,7 @@ public static class DotEnvMultiFileTests
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.env");
 
-        Assert.Throws<FileNotFoundException>(() => DotEnv.ParseFiles(tempPath));
+        Assert.Throws<FileNotFoundException>(() => DotEnvFile.ParseFiles(tempPath));
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public static class DotEnvMultiFileTests
         {
             File.WriteAllText(requiredPath, "KEY=value");
 
-            var doc = DotEnv.ParseFiles(requiredPath, optionalPath + "?");
+            var doc = DotEnvFile.ParseFiles(requiredPath, optionalPath + "?");
 
             Assert.Equal("value", doc.Get("KEY"));
         }
@@ -64,7 +64,7 @@ public static class DotEnvMultiFileTests
         var optionalPath1 = Path.Combine(Path.GetTempPath(), $"nonexistent1_{Guid.NewGuid()}.env");
         var optionalPath2 = Path.Combine(Path.GetTempPath(), $"nonexistent2_{Guid.NewGuid()}.env");
 
-        var doc = DotEnv.ParseFiles(optionalPath1 + "?", optionalPath2 + "?");
+        var doc = DotEnvFile.ParseFiles(optionalPath1 + "?", optionalPath2 + "?");
 
         Assert.Equal(0, doc.Count);
     }
@@ -74,7 +74,7 @@ public static class DotEnvMultiFileTests
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.env");
 
-        var result = DotEnv.TryParseFile(tempPath);
+        var result = DotEnvFile.TryParseFile(tempPath);
 
         Assert.False(result.IsOk);
         Assert.NotNull(result.Error);
@@ -90,7 +90,7 @@ public static class DotEnvMultiFileTests
         {
             File.WriteAllText(tempPath, "KEY=value");
 
-            var result = DotEnv.TryParseFile(tempPath);
+            var result = DotEnvFile.TryParseFile(tempPath);
 
             Assert.True(result.IsOk);
             Assert.NotNull(result.Doc);
@@ -107,7 +107,7 @@ public static class DotEnvMultiFileTests
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.env");
 
-        var result = DotEnv.TryParseFiles(tempPath);
+        var result = DotEnvFile.TryParseFiles(tempPath);
 
         Assert.False(result.IsOk);
         Assert.IsType<FileNotFoundException>(result.Error);
@@ -123,7 +123,7 @@ public static class DotEnvMultiFileTests
         {
             File.WriteAllText(requiredPath, "KEY=value");
 
-            var result = DotEnv.TryParseFiles(requiredPath, optionalPath + "?");
+            var result = DotEnvFile.TryParseFiles(requiredPath, optionalPath + "?");
 
             Assert.True(result.IsOk);
             Assert.Equal("value", result.Doc?.Get("KEY"));
@@ -143,7 +143,7 @@ public static class DotEnvMultiFileTests
         {
             File.WriteAllText(tempPath, "INVALID KEY WITH SPACES=value");
 
-            var result = DotEnv.TryParseFiles(tempPath);
+            var result = DotEnvFile.TryParseFiles(tempPath);
 
             Assert.False(result.IsOk);
             Assert.IsType<DotEnvParseException>(result.Error);
@@ -159,7 +159,7 @@ public static class DotEnvMultiFileTests
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.env");
 
-        return Assert.ThrowsAsync<FileNotFoundException>(() => DotEnv.ParseFileAsync(tempPath, TestContext.Current.CancellationToken));
+        return Assert.ThrowsAsync<FileNotFoundException>(() => DotEnvFile.ParseFileAsync(tempPath, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public static class DotEnvMultiFileTests
         {
             await File.WriteAllTextAsync(tempPath, "KEY=value", TestContext.Current.CancellationToken);
 
-            var doc = await DotEnv.ParseFileAsync(tempPath, TestContext.Current.CancellationToken);
+            var doc = await DotEnvFile.ParseFileAsync(tempPath, TestContext.Current.CancellationToken);
 
             Assert.Equal("value", doc.Get("KEY"));
         }
@@ -186,7 +186,7 @@ public static class DotEnvMultiFileTests
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.env");
 
-        var result = await DotEnv.TryParseFileAsync(tempPath, TestContext.Current.CancellationToken);
+        var result = await DotEnvFile.TryParseFileAsync(tempPath, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsOk);
         Assert.IsType<FileNotFoundException>(result.Error);
@@ -201,7 +201,7 @@ public static class DotEnvMultiFileTests
         {
             await File.WriteAllTextAsync(tempPath, "KEY=value", TestContext.Current.CancellationToken);
 
-            var result = await DotEnv.TryParseFileAsync(tempPath, TestContext.Current.CancellationToken);
+            var result = await DotEnvFile.TryParseFileAsync(tempPath, TestContext.Current.CancellationToken);
 
             Assert.True(result.IsOk);
             Assert.Equal("value", result.Doc?.Get("KEY"));
@@ -223,7 +223,7 @@ public static class DotEnvMultiFileTests
             await File.WriteAllTextAsync(tempPath1, "KEY1=value1\nKEY2=value2", TestContext.Current.CancellationToken);
             await File.WriteAllTextAsync(tempPath2, "KEY2=override\nKEY3=value3", TestContext.Current.CancellationToken);
 
-            var doc = await DotEnv.ParseFilesAsync(new[] { tempPath1, tempPath2 }, TestContext.Current.CancellationToken);
+            var doc = await DotEnvFile.ParseFilesAsync(new[] { tempPath1, tempPath2 }, TestContext.Current.CancellationToken);
 
             Assert.Equal("value1", doc.Get("KEY1"));
             Assert.Equal("override", doc.Get("KEY2"));
@@ -242,7 +242,7 @@ public static class DotEnvMultiFileTests
         using var stream1 = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("KEY1=value1\nKEY2=value2"));
         using var stream2 = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("KEY2=override\nKEY3=value3"));
 
-        var doc = DotEnv.ParseStreams(stream1, stream2);
+        var doc = DotEnvFile.ParseStreams(stream1, stream2);
 
         Assert.Equal("value1", doc.Get("KEY1"));
         Assert.Equal("override", doc.Get("KEY2"));

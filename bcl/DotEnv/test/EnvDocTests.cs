@@ -368,4 +368,83 @@ public static class EnvDocTests
         var n = new EnvNewline();
         Assert.Equal(EnvElementKind.Newline, n.Kind);
     }
+
+    [Fact]
+    public static void Merge_Dictionary_Overwrites_Keys()
+    {
+        var doc = new EnvDoc();
+        doc.Set("KEY1", "value1");
+
+        var dict = new Dictionary<string, string>
+        {
+            ["KEY2"] = "value2",
+            ["KEY1"] = "override",
+        };
+
+        doc.Merge(dict);
+
+        Assert.Equal("override", doc.Get("KEY1"));
+        Assert.Equal("value2", doc.Get("KEY2"));
+    }
+
+    [Fact]
+    public static void Merge_Dictionary_Null_Throws()
+    {
+        var doc = new EnvDoc();
+        Assert.Throws<ArgumentNullException>(() => doc.Merge((IDictionary<string, string>)null!));
+    }
+
+    [Fact]
+    public static void ToDictionary_Generic_Transforms_Values()
+    {
+        var doc = new EnvDoc();
+        doc.Set("PORT", "8080");
+        doc.Set("TIMEOUT", "30");
+
+        var dict = doc.ToDictionary<string, int>(k => k, v => int.Parse(v));
+
+        Assert.Equal(8080, dict["PORT"]);
+        Assert.Equal(30, dict["TIMEOUT"]);
+    }
+
+    [Fact]
+    public static void ToDictionary_Generic_Null_Selectors_Throw()
+    {
+        var doc = new EnvDoc();
+        doc.Set("KEY", "value");
+
+        Assert.Throws<ArgumentNullException>(() => doc.ToDictionary<string, string>(null!, v => v));
+        Assert.Throws<ArgumentNullException>(() => doc.ToDictionary<string, string>(k => k, null!));
+    }
+
+    [Fact]
+    public static void ToOrderedDictionary_Preserves_Order()
+    {
+        var doc = new EnvDoc();
+        doc.Set("KEY3", "value3");
+        doc.Set("KEY1", "value1");
+        doc.Set("KEY2", "value2");
+
+        var dict = doc.ToOrderedDictionary();
+
+        var keys = dict.Keys.Cast<string>().ToList();
+        Assert.Equal(new[] { "KEY3", "KEY1", "KEY2" }, keys);
+    }
+
+    [Fact]
+    public static void ToOrderedDictionary_Contains_All_Variables()
+    {
+        var doc = new EnvDoc();
+        doc.Set("KEY1", "value1");
+        doc.Set("KEY2", "value2");
+        doc.AddComment("comment");
+        doc.Set("KEY3", "value3");
+
+        var dict = doc.ToOrderedDictionary();
+
+        Assert.Equal(3, dict.Count);
+        Assert.Equal("value1", dict["KEY1"]);
+        Assert.Equal("value2", dict["KEY2"]);
+        Assert.Equal("value3", dict["KEY3"]);
+    }
 }
