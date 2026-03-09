@@ -9,6 +9,16 @@ namespace FrostYeti.Secrets;
 /// uses a cryptographically secure random number generator to generate
 /// new secrets.
 /// </summary>
+/// <remarks>
+/// <example>
+/// <code lang="csharp">
+/// var generator = new SecretGenerator()
+///     .Add(SecretCharacterSets.LatinAlphaUpperCase)
+///     .Add(SecretCharacterSets.Digits);
+/// char[] secret = generator.Generate(12);
+/// </code>
+/// </example>
+/// </remarks>
 public class SecretGenerator : ISecretGenerator
 {
     private readonly List<char> characters = new();
@@ -58,6 +68,25 @@ public class SecretGenerator : ISecretGenerator
         return lower && upper && digit && special;
     };
 
+    /// <summary>
+    /// Generates a new password using the provided parameters.
+    /// </summary>
+    /// <param name="length">The length of the password to generate.</param>
+    /// <param name="characters">The allowed set of characters.</param>
+    /// <param name="validator">The function to validate the generated password.</param>
+    /// <returns>A new password as a char array.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="characters"/> or <paramref name="validator"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="length"/> is less than 1.</exception>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// char[] pwd = SecretGenerator.GenerateNewPassword(
+    ///     10,
+    ///     SecretCharacterSets.Digits.ToList(),
+    ///     p => p.Length == 10);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static char[] GenerateNewPassword(int length, IList<char> characters, Func<char[], bool> validator)
     {
         if (characters is null || characters.Count == 0)
@@ -95,6 +124,13 @@ public class SecretGenerator : ISecretGenerator
     /// </summary>
     /// <param name="character">The character to add.</param>
     /// <returns>The generator to chain methods.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var generator = new SecretGenerator().Add('!');
+    /// </code>
+    /// </example>
+    /// </remarks>
     public ISecretGenerator Add(char character)
     {
         if (!this.characters.Contains(character))
@@ -104,10 +140,17 @@ public class SecretGenerator : ISecretGenerator
     }
 
     /// <summary>
-    /// Add a character to the generator.
+    /// Add a character set to the generator.
     /// </summary>
     /// <param name="characters">The characters to add.</param>
     /// <returns>The generator to chain methods.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var generator = new SecretGenerator().Add("ABCDEF");
+    /// </code>
+    /// </example>
+    /// </remarks>
     public ISecretGenerator Add(IEnumerable<char> characters)
     {
         foreach (var c in characters)
@@ -124,6 +167,13 @@ public class SecretGenerator : ISecretGenerator
     /// </summary>
     /// <param name="validator">The validator function.</param>
     /// <returns>The generator to chain methods.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var generator = new SecretGenerator().SetValidator(p => p.Length >= 10);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public ISecretGenerator SetValidator(Func<char[], bool> validator)
     {
         this.validator = validator;
@@ -135,6 +185,13 @@ public class SecretGenerator : ISecretGenerator
     /// </summary>
     /// <param name="length">The length of the secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = new SecretGenerator().Add("abc").Generate(5);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public char[] Generate(int length)
         => GenerateNewPassword(length, this.characters, this.validator);
 
@@ -145,6 +202,13 @@ public class SecretGenerator : ISecretGenerator
     /// <param name="characters">The allowed set of characters to use.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = new SecretGenerator().Generate(8, "0123456789".ToList(), p => true);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public char[] Generate(int length, IList<char>? characters, Func<char[], bool>? validator)
         => GenerateNewPassword(
             length,

@@ -1,8 +1,19 @@
-﻿using System.Security;
+using System.Security;
 using System.Text;
 
 namespace FrostYeti.Secrets;
 
+/// <summary>
+/// Provides extension methods for <see cref="ISecretGenerator"/>.
+/// </summary>
+/// <remarks>
+/// <example>
+/// <code lang="csharp">
+/// ISecretGenerator generator = new SecretGenerator();
+/// string secret = generator.AddDefaults().GenerateAsString(12);
+/// </code>
+/// </example>
+/// </remarks>
 public static class SecretGeneratorExtensions
 {
     /// <summary>
@@ -10,6 +21,13 @@ public static class SecretGeneratorExtensions
     /// </summary>
     /// <param name="pg">The password generator.</param>
     /// <returns>The generator to chain method calls.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// generator.AddDefaults();
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static ISecretGenerator AddDefaults(
         this ISecretGenerator pg)
     {
@@ -27,6 +45,13 @@ public static class SecretGeneratorExtensions
     /// <param name="characters">The allowed set of characters to use.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = generator.GenerateAsCharSpan(12);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static ReadOnlySpan<char> GenerateAsCharSpan(
         this ISecretGenerator pg,
         int length,
@@ -44,6 +69,13 @@ public static class SecretGeneratorExtensions
     /// <param name="characters">The allowed set of characters to use.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = generator.GenerateAsString(12);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static string GenerateAsString(
         this ISecretGenerator pg,
         int length,
@@ -64,6 +96,13 @@ public static class SecretGeneratorExtensions
     /// <param name="characters">The allowed set of characters to use.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = generator.GenerateAsSecureString(12);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static unsafe SecureString GenerateAsSecureString(
         this ISecretGenerator pg,
         int length,
@@ -91,6 +130,13 @@ public static class SecretGeneratorExtensions
     /// <param name="encoding">The encoding to use to convert the password to bytes. Defaults to UTF8.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = generator.GenerateAsBytes(12);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static byte[] GenerateAsBytes(
         this ISecretGenerator pg,
         int length,
@@ -115,6 +161,13 @@ public static class SecretGeneratorExtensions
     /// <param name="encoding">The encoding to use to convert the password to bytes. Defaults to UTF8.</param>
     /// <param name="validator">The function used to validate the new secret.</param>
     /// <returns>The generated secret.</returns>
+    /// <remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var secret = generator.GenerateAsByteSpan(12);
+    /// </code>
+    /// </example>
+    /// </remarks>
     public static ReadOnlySpan<byte> GenerateAsByteSpan(
         this ISecretGenerator pg,
         int length,

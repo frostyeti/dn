@@ -48,4 +48,11 @@
   <Folder Name="/Secrets.OperatingSystem/test/">
     <Project Path="Secrets.OperatingSystem/test/FrostYeti.Secrets.OperatingSystem.Tests.csproj" />
   </Folder>
+  <Folder Name="/Secrets/" />
+  <Folder Name="/Secrets/src/">
+    <Project Path="Secrets/src/FrostYeti.Secrets.csproj" />
+  </Folder>
+  <Folder Name="/Secrets/test/">
+    <Project Path="Secrets/test/FrostYeti.Secrets.Tests.csproj" />
+  </Folder>
 </Solution>
